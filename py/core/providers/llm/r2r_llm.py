@@ -17,7 +17,7 @@ class R2RCompletionProvider(CompletionProvider):
 
     - If `generation_config.model` starts with "anthropic/", call AnthropicCompletionProvider.
     - If it starts with "azure-foundry/", call AzureFoundryCompletionProvider.
-    - If it starts with one of the other OpenAI-like prefixes ("openai/", "azure/", "deepseek/", "ollama/", "lmstudio/")
+    - If it starts with one of the other OpenAI-like prefixes ("openai/", "azure/", "deepseek/", "ollama/", "llmman/", "lmstudio/")
       or has no prefix (e.g. "gpt-4", "gpt-3.5"), call OpenAICompletionProvider.
     - Otherwise, fallback to LiteLLMCompletionProvider.
     """
@@ -65,6 +65,7 @@ class R2RCompletionProvider(CompletionProvider):
             "azure/",
             "deepseek/",
             "ollama/",
+            "llmman/",
             "lmstudio/",
         ]
         if (

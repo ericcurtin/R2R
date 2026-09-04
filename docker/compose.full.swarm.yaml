@@ -305,6 +305,9 @@ services:
       # Ollama
       - OLLAMA_API_BASE=${OLLAMA_API_BASE:-http://host.docker.internal:11434}
 
+      # llmman
+      - LLMMAN_API_BASE=${LLMMAN_API_BASE:-http://host.docker.internal:17434/v1}
+
       # LM Studio
       - LM_STUDIO_API_BASE=${LM_STUDIO_API_BASE:-http://host.docker.internal:1234}
       - LM_STUDIO_API_KEY=${LM_STUDIO_API_KEY:-1234}

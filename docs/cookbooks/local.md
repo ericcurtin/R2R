@@ -11,6 +11,8 @@ For this cookbook, we'll serve our local models via Ollama. [You may follow the 
 
 You can also follow along using LM Studio. To get started with LM Studio, see our [Local LLM documentation](/self-hosting/local-rag).
 
+Or with [llmman](https://github.com/llmmanorg/llmman), a local model runner that serves the Ollama API (alongside OpenAI- and Anthropic-compatible ones) on port 17434. Pull models with `llmman pull gemma4` (or straight from Hugging Face, e.g. `llmman pull hf.co/nomic-ai/nomic-embed-text-v1.5-GGUF`), start it with `llmman serve`, then launch R2R with `R2R_CONFIG_NAME=llmman`. Use the `llmman/` model prefix and set `LLMMAN_API_BASE` (default `http://localhost:17434/v1`) if the server runs elsewhere.
+
 R2R supports [LiteLLM](https://github.com/BerriAI/litellm) for routing embedding and completion requests. This allows for OpenAI-compatible endpoints to be called and seamlessly routed to, if you are serving local models another way.
 </Note>
 

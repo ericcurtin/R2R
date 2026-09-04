@@ -23,6 +23,8 @@ class OpenAICompletionProvider(CompletionProvider):
         self.async_deepseek_client = None
         self.ollama_client = None
         self.async_ollama_client = None
+        self.llmman_client = None
+        self.async_llmman_client = None
         self.lmstudio_client = None
         self.async_lmstudio_client = None
         # NEW: Azure Foundry clients using the Azure Inference API
@@ -86,6 +88,22 @@ class OpenAICompletionProvider(CompletionProvider):
             )
             logger.debug("Ollama OpenAI clients initialized successfully")
 
+        # Initialize llmman clients (https://github.com/llmmanorg/llmman).
+        # llmman serves the Ollama and OpenAI APIs on port 17434; no key needed.
+        llmman_api_base = os.getenv(
+            "LLMMAN_API_BASE", "http://localhost:17434/v1"
+        )
+        if llmman_api_base:
+            self.llmman_client = OpenAI(
+                api_key=os.getenv("LLMMAN_API_KEY", "dummy"),
+                base_url=llmman_api_base,
+            )
+            self.async_llmman_client = AsyncOpenAI(
+                api_key=os.getenv("LLMMAN_API_KEY", "dummy"),
+                base_url=llmman_api_base,
+            )
+            logger.debug("llmman OpenAI clients initialized successfully")
+
         # Initialize LMStudio clients
         lmstudio_api_base = os.getenv(
             "LMSTUDIO_API_BASE", "http://localhost:1234/v1"
@@ -135,6 +153,7 @@ class OpenAICompletionProvider(CompletionProvider):
                 self.openai_client,
                 self.azure_client,
                 self.ollama_client,
+                self.llmman_client,
                 self.lmstudio_client,
                 self.azure_foundry_client,
             ]
@@ -142,7 +161,7 @@ class OpenAICompletionProvider(CompletionProvider):
             raise ValueError(
                 "No valid client credentials found. Please set either OPENAI_API_KEY, "
                 "both AZURE_API_KEY and AZURE_API_BASE environment variables, "
-                "OLLAMA_API_BASE, LMSTUDIO_API_BASE, or AZURE_FOUNDRY_API_KEY and AZURE_FOUNDRY_API_ENDPOINT."
+                "OLLAMA_API_BASE, LLMMAN_API_BASE, LMSTUDIO_API_BASE, or AZURE_FOUNDRY_API_KEY and AZURE_FOUNDRY_API_ENDPOINT."
             )
 
     def _get_client_and_model(self, model: str):
@@ -172,6 +191,12 @@ class OpenAICompletionProvider(CompletionProvider):
                     "Ollama OpenAI credentials not configured but ollama/ model prefix used"
                 )
             return self.ollama_client, model[7:]  # Strip 'ollama/' prefix
+        elif model.startswith("llmman/"):
+            if not self.llmman_client:
+                raise ValueError(
+                    "llmman credentials not configured but llmman/ model prefix used"
+                )
+            return self.llmman_client, model[7:]  # Strip 'llmman/' prefix
         elif model.startswith("lmstudio/"):
             if not self.lmstudio_client:
                 raise ValueError(
@@ -228,6 +253,12 @@ class OpenAICompletionProvider(CompletionProvider):
                     "Ollama OpenAI credentials not configured but ollama/ model prefix used"
                 )
             return self.async_ollama_client, model[7:]
+        elif model.startswith("llmman/"):
+            if not self.async_llmman_client:
+                raise ValueError(
+                    "llmman credentials not configured but llmman/ model prefix used"
+                )
+            return self.async_llmman_client, model[7:]
         elif model.startswith("lmstudio/"):
             if not self.async_lmstudio_client:
                 raise ValueError(
